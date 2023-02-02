@@ -1,4 +1,4 @@
-package es.edu.iesra.daw.revilofe.api
+package es.edu.iesra.daw.revilofe.servicios
 
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.core.spec.style.DescribeSpec

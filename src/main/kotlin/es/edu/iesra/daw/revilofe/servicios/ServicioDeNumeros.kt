@@ -1,4 +1,4 @@
-package es.edu.iesra.daw.revilofe.api
+package es.edu.iesra.daw.revilofe.servicios
 
 class ServicioDeNumeros(private val minimo: Int =0, private val maximo: Int =100) {
 
