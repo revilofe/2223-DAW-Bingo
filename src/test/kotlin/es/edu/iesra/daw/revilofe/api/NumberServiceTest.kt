@@ -27,7 +27,7 @@ class NumberServiceTest : DescribeSpec({
             }
             it("<0, debe lanzar un error de parámetros ilegales"){
                 val minimo = 5
-                val maximo = 5
+                val maximo = 4
                 val exception = shouldThrowExactly<IllegalArgumentException> {
                     ServicioDeNumeros(minimo, maximo)
                 }
