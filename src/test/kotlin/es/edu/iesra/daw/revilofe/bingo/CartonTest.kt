@@ -33,22 +33,25 @@ class CartonTest : DescribeSpec({
                 listOf(75, 61, 70, 69)
             )
         )
-        println(carton)
-
 
         it("Tiene que marcar aquel numero que ha salido y lo contiene") {
-            val numero = 4
+            val numero = 15
             carton.estaMarcado(numero).shouldBeFalse()
             carton.marcar(numero)
             carton.estaMarcado(numero).shouldBeTrue()
         }
         it("No tiene que marcar aquel numero que ha salido y no contine") {
-            val numero = 6
+            val numero = 1
             carton.estaMarcado(numero).shouldBeFalse()
             carton.marcar(numero)
             carton.estaMarcado(numero).shouldBeFalse()
         }
         it("Tiene que poder chequear si ha conseguido una linea") {
+            carton.compruebaSiLinea().shouldBeFalse()
+            listOf(4,29,40,46,75).forEach{
+                carton.marcar(it)
+            }
+            carton.compruebaSiLinea().shouldBeTrue()
 
         }
         it("Tiene que poder chequear si ha conseguido bingo") {
