@@ -22,7 +22,9 @@ Cada cartón cuenta con cinco columnas y cinco filas, con números generados al 
 class Carton(numeros: List<List<Int>>) {
     private lateinit var carton : List<List<Casilla>>
     private lateinit var estadoBingo : MutableMap<Int, Casilla>
-    private lateinit var estadoLineas : MutableList<Casilla>
+    private var estadoLineas : MutableList<MutableList<Casilla>> = MutableList<MutableList<Casilla>>((carton.size*2)+2) {
+        MutableList<Casilla>(carton.size-1)
+    }
 
     init{
         montaCarton(numeros)
@@ -30,7 +32,16 @@ class Carton(numeros: List<List<Int>>) {
     }
 
     private fun montaEstadoCarton() {
-        TODO("Not yet implemented")
+        //Horizontales
+        carton.forEachIndexed { indexCasillas, casillas ->
+            estadoLineas.add()
+            casillas.forEachIndexed { indexCasilla, casilla ->
+
+            }
+        }
+        //Verticales
+
+        //Diagonales
     }
 
     private fun montaCarton(numeros: List<List<Int>>) {
