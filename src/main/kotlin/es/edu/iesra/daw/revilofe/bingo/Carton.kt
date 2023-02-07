@@ -7,7 +7,7 @@ data class Casilla(val f:Int, val c:Int, val numero:Int, var estado: EstadoCasil
 enum class LineaCantada {
     SI, NO
 }
-data class Linea(val linea:List<Casilla>, val cantada:LineaCantada=LineaCantada.NO)
+data class Linea(val linea: MutableList<Casilla> =mutableListOf<Casilla>(), val cantada:LineaCantada=LineaCantada.NO)
 
 
 
@@ -20,50 +20,16 @@ Cada cartón cuenta con cinco columnas y cinco filas, con números generados al 
     el cuarto desde el 46 al 60 y la quinta desde el 61 al 75.
  */
 class Carton(numeros: List<List<Int>>) {
-    private lateinit var carton : List<List<Casilla>>
+    private lateinit var carton : List<MutableList<Casilla>>
     private lateinit var estadoBingo : MutableMap<Int, Casilla>
-    private var estadoLineas : MutableList<MutableList<Casilla>> = MutableList<MutableList<Casilla>>((carton.size*2)+2) {
-        MutableList<Casilla>(carton.size-1)
-    }
+    private lateinit var estadoLineas : MutableList<Linea>
 
     init{
         montaCarton(numeros)
-        montaEstadoCarton()
-    }
-
-    private fun montaEstadoCarton() {
-        //Horizontales
-        carton.forEachIndexed { indexCasillas, casillas ->
-            estadoLineas.add()
-            casillas.forEachIndexed { indexCasilla, casilla ->
-
-            }
-        }
-        //Verticales
-
-        //Diagonales
-    }
-
-    private fun montaCarton(numeros: List<List<Int>>) {
-        var indFilasNumeros = 0
-        var indColumasNumeros = 0
-        estadoBingo = mutableMapOf()
-        carton = List(numeros[0].size + 1) { iColumnas ->
-            List(numeros.size) { iFilas ->
-                if (iFilas == iColumnas) {
-                    //println("$iFilas, $iColumnas, -1")
-                    Casilla(iFilas, iColumnas, -1, EstadoCasilla.VACIO)
-                } else {
-                    //println("$iFilas, $iColumnas, <- $indFilasNumeros, $indColumasNumeros: ${numeros[indFilasNumeros][indColumasNumeros]}")
-                    Casilla(iFilas, iColumnas, numeros[indFilasNumeros][indColumasNumeros++]).also {
-                        estadoBingo[it.numero] = it
-                    }
-                }
-            }.also {
-                indColumasNumeros = 0
-                indFilasNumeros++
-            }
-        }
+        montaEstadoBingo()
+        montaEstadoLineas()
+        println(carton)
+        estadoLineas.forEach { println(it) }
     }
 
     fun estaMarcado(numero: Int): Boolean {
@@ -79,7 +45,13 @@ class Carton(numeros: List<List<Int>>) {
     }
 
     fun compruebaSiLinea(): Boolean {
-        return false
+        var indiceLinea = 0
+        var hayLinea = false
+        while (!hayLinea && indiceLinea < estadoLineas.size){
+            hayLinea = esUnaLineaSinCantar(estadoLineas[indiceLinea])
+            indiceLinea++
+        }
+        return hayLinea
     }
 
     fun compruebaSiBingo(): Boolean {
@@ -87,4 +59,74 @@ class Carton(numeros: List<List<Int>>) {
             it.estado == EstadoCasilla.NOMARCADO
         }.size == 0)
     }
+
+    private fun montaCarton(numeros: List<List<Int>>) {
+        val dimension = numeros.size
+        carton = List(dimension){_->
+            mutableListOf<Casilla>()
+        }
+        var filasCarton = 0
+        var columnasCarton = 0
+
+        numeros.forEach {
+            it.forEach{numero ->
+                if (filasCarton==columnasCarton) {
+                    carton[filasCarton].add(Casilla(filasCarton, columnasCarton, -1, EstadoCasilla.VACIO))
+                    filasCarton++
+                }
+                carton[filasCarton].add(Casilla(filasCarton, columnasCarton, numero, EstadoCasilla.NOMARCADO))
+
+                filasCarton++
+            }
+            columnasCarton++
+            filasCarton=0
+        }.also {
+            //Rellena la ultima casilla
+            carton[dimension-1].add(Casilla(dimension-1, dimension-1, -1, EstadoCasilla.VACIO))
+        }
+    }
+
+    private fun montaEstadoLineas() {
+        var indiceEstadoLinea = 0
+        estadoLineas = MutableList<Linea>((carton.size*2)+2) {
+            Linea()
+        }
+        //Lineas Horizontales
+        carton.forEach { filaCasillas ->
+            filaCasillas.filter { it.estado!= EstadoCasilla.VACIO}.forEach { casilla ->
+                estadoLineas[indiceEstadoLinea].linea.add(casilla)
+            }
+            indiceEstadoLinea++
+        }
+        //Lineas Verticales
+        val dimension = carton.size
+        for(indiceCasilla in 0..dimension-1) {
+            for (indiceLista in 0..dimension-1)
+                if (carton[indiceLista][indiceCasilla].estado!=EstadoCasilla.VACIO)
+                    estadoLineas[indiceEstadoLinea].linea.add(carton[indiceLista][indiceCasilla])
+            indiceEstadoLinea++
+        }
+
+        //Diagonales
+        for(indice in 0..dimension-2) {
+            estadoLineas[indiceEstadoLinea].linea.add(carton[indice][indice+1])
+            estadoLineas[indiceEstadoLinea+1].linea.add(carton[indice+1][indice])
+        }
+
+    }
+
+    private fun montaEstadoBingo(){
+        estadoBingo = mutableMapOf()
+        carton.forEach { filaCasillas ->
+            filaCasillas.filter { it.estado!= EstadoCasilla.VACIO}.forEach { casilla ->
+                estadoBingo[casilla.numero] = casilla
+            }
+        }
+
+    }
+
+    private fun esUnaLineaSinCantar(linea: Linea): Boolean {
+        return ((linea.linea.filter { it.estado == EstadoCasilla.NOMARCADO }.size ==0) && (linea.cantada == LineaCantada.NO))
+    }
+
 }
