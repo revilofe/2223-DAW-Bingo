@@ -8,7 +8,7 @@ import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.string.shouldStartWith
 
-class NumberServiceTest : DescribeSpec({
+class ServicioDeNumerosTest : DescribeSpec({
     describe("Servicio de numeros"){
         it("El total de números en la fuente es igual a máximo-mínimo"){
             val minimo = 5
@@ -27,7 +27,7 @@ class NumberServiceTest : DescribeSpec({
             }
             it("<0, debe lanzar un error de parámetros ilegales"){
                 val minimo = 5
-                val maximo = 5
+                val maximo = 4
                 val exception = shouldThrowExactly<IllegalArgumentException> {
                     ServicioDeNumeros(minimo, maximo)
                 }
