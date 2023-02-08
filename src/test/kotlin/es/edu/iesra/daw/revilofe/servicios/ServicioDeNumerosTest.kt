@@ -8,7 +8,7 @@ import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.string.shouldStartWith
 
-class NumberServiceTest : DescribeSpec({
+class ServicioDeNumerosTest : DescribeSpec({
     describe("Servicio de numeros"){
         it("El total de números en la fuente es igual a máximo-mínimo"){
             val minimo = 5
