@@ -7,7 +7,7 @@ data class Casilla(val f:Int, val c:Int, val numero:Int, var estado: EstadoCasil
 enum class LineaCantada {
     SI, NO
 }
-data class Linea(val linea: MutableList<Casilla> =mutableListOf<Casilla>(), val cantada:LineaCantada=LineaCantada.NO)
+data class Linea(val linea: MutableList<Casilla> =mutableListOf(), val cantada:LineaCantada=LineaCantada.NO)
 
 
 
@@ -19,7 +19,7 @@ Cada cartón cuenta con cinco columnas y cinco filas, con números generados al 
     la tercera desde el 31 al 45
     el cuarto desde el 46 al 60 y la quinta desde el 61 al 75.
  */
-class Carton(numeros: List<List<Int>>) {
+class Carton(val id: String, numeros: List<List<Int>>) {
     private lateinit var carton : List<MutableList<Casilla>>
     private lateinit var estadoBingo : MutableMap<Int, Casilla>
     private lateinit var estadoLineas : MutableList<Linea>
@@ -55,15 +55,15 @@ class Carton(numeros: List<List<Int>>) {
     }
 
     fun compruebaSiBingo(): Boolean {
-        return (estadoBingo.values.filter {
+        return (estadoBingo.values.none {
             it.estado == EstadoCasilla.NOMARCADO
-        }.size == 0)
+        })
     }
 
     private fun montaCarton(numeros: List<List<Int>>) {
         val dimension = numeros.size
-        carton = List(dimension){_->
-            mutableListOf<Casilla>()
+        carton = List(dimension){
+            mutableListOf()
         }
         var filasCarton = 0
         var columnasCarton = 0
@@ -88,7 +88,7 @@ class Carton(numeros: List<List<Int>>) {
 
     private fun montaEstadoLineas() {
         var indiceEstadoLinea = 0
-        estadoLineas = MutableList<Linea>((carton.size*2)+2) {
+        estadoLineas = MutableList((carton.size*2)+2) {
             Linea()
         }
         //Lineas Horizontales
@@ -100,8 +100,8 @@ class Carton(numeros: List<List<Int>>) {
         }
         //Lineas Verticales
         val dimension = carton.size
-        for(indiceCasilla in 0..dimension-1) {
-            for (indiceLista in 0..dimension-1)
+        for(indiceCasilla in 0 until dimension) {
+            for (indiceLista in 0 until dimension)
                 if (carton[indiceLista][indiceCasilla].estado!=EstadoCasilla.VACIO)
                     estadoLineas[indiceEstadoLinea].linea.add(carton[indiceLista][indiceCasilla])
             indiceEstadoLinea++
@@ -126,7 +126,7 @@ class Carton(numeros: List<List<Int>>) {
     }
 
     private fun esUnaLineaSinCantar(linea: Linea): Boolean {
-        return ((linea.linea.filter { it.estado == EstadoCasilla.NOMARCADO }.size ==0) && (linea.cantada == LineaCantada.NO))
+        return ((linea.linea.none { it.estado == EstadoCasilla.NOMARCADO }) && (linea.cantada == LineaCantada.NO))
     }
 
 }
