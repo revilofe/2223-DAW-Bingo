@@ -3,21 +3,21 @@ package es.edu.iesra.daw.revilofe.patrones.signalslot
 
 class Signal<T> {
 
-    class Connection
+    class Conexion
 
-    val callbacks = mutableMapOf<Connection, (T) -> Unit>()
+    val callbacks = mutableMapOf<Conexion, (T) -> Unit>()
 
-    fun emit(newValue: T) {
-        for(cb in callbacks) cb.value(newValue)
+    fun emitir(nuevoValor: T) {
+        for(cb in callbacks) cb.value(nuevoValor)
     }
 
-    fun connect(callback: (newValue: T) -> Unit) : Connection {
-        val connection = Connection()
-        callbacks[connection] = callback
-        return connection
+    fun conectar(callback: (nuevoValor: T) -> Unit) : Conexion {
+        val conexion = Conexion()
+        callbacks[conexion] = callback
+        return conexion
     }
 
-    fun disconnect(connection : Connection) {
-        callbacks.remove(connection)
+    fun desconectar(conexion : Conexion) {
+        callbacks.remove(conexion)
     }
 }

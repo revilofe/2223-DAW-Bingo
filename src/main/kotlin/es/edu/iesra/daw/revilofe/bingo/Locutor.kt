@@ -11,9 +11,11 @@ class Locutor(val bombo:Bombo = Bombo ) {
     fun sacaNumero():Boolean{
         var hayBolas = false
         bombo.nuevaBola()?.let{
-            nuevoNumero.emit(it)
+            nuevoNumero.emitir(it)
             hayBolas = true
         }
         return hayBolas
     }
+
+
 }
