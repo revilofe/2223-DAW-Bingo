@@ -3,7 +3,13 @@ package es.edu.iesra.daw.revilofe.bingo
 import es.edu.iesra.daw.revilofe.servicios.ServicioDeNumeros
 
 object GeneradorCartones {
+
+    /**
+     * Genera los cartones indicados por **cuantos**
+     */
     fun genera(cuantos: Int): List<Carton> {
+        //TODO: Para hacerlo generico, se tendría que indicar el número de filas, columnas. Y calcular el rango de
+        // numeros de cada columna y cuantos numeros tiene que proporcionar columna
         return List<Carton>(cuantos){
             Carton( it.toString(),
                 listOf(
