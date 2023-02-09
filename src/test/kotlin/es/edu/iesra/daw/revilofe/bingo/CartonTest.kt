@@ -48,7 +48,7 @@ class CartonTest : DescribeSpec({
         }
         it("Tiene que poder chequear si ha conseguido una linea") {
             carton.compruebaSiLinea().shouldBeFalse()
-            listOf(54, 48, 52, 50).forEach{
+            listOf(17, 35, 54, 61).forEach{
                 carton.marcar(it)
             }
             carton.compruebaSiLinea().shouldBeTrue()

@@ -6,9 +6,7 @@ import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkObject
 import io.mockk.verify
-import java.util.logging.Logger
 
 /*
 El bombo expulsará una bola marcada con un número entre 1 y 75
@@ -39,7 +37,7 @@ class BomboTest : DescribeSpec({
                 it.add(null)
             }
         // Inyecto el servicio de numeros Mock
-        Bombo.conf(servicioNumeroMock)
+        Bombo.configura(servicioNumeroMock)
         it("Debe generar numeros aleatorios entre minimo y maximo") {
             // Hago (maximo - minimo) invocaciones al metodo y introduzco los elementos en la lista
             var lista = List(maximo - minimo) {

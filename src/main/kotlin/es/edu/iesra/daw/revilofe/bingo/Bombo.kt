@@ -6,9 +6,9 @@ object Bombo {
 
     lateinit var servicioNumeros: ServicioDeNumeros
     init {
-        conf()
+        configura()
     }
-    fun conf(servicioNumeros: ServicioDeNumeros = ServicioDeNumeros(1,76)) {
+    fun configura(servicioNumeros: ServicioDeNumeros = ServicioDeNumeros(1,76)) {
         this.servicioNumeros = servicioNumeros
     }
 

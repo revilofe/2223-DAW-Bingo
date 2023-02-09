@@ -1,15 +1,35 @@
 package es.edu.iesra.daw.revilofe.bingo
 
+import es.edu.iesra.daw.revilofe.patrones.signalslot.Signal
+
+/**
+ * Representa los posibles estados de las casillas.
+ */
 enum class EstadoCasilla {
     MARCADO, NOMARCADO, VACIO
 }
+
+/**
+ * Representa las casillas del cartón
+ */
 data class Casilla(val f:Int, val c:Int, val numero:Int, var estado: EstadoCasilla = EstadoCasilla.NOMARCADO)
+
+/**
+ * Representa los posibles estados de una línea.
+ */
 enum class LineaCantada {
     SI, NO
 }
-data class Linea(val linea: MutableList<Casilla> =mutableListOf(), val cantada:LineaCantada=LineaCantada.NO)
 
+/**
+ * Representa una línea del cartón y su estado, y su estado. Estructura util para saber si hay o no línea,.
+ */
+data class Linea(val idCarton: String, val linea: MutableList<Casilla> =mutableListOf(), var cantada:LineaCantada=LineaCantada.NO)
 
+/**
+ * Representa un cartón en modo data class. Util para pasar la info del cartón.
+ */
+data class NumerosCarton(val idCarton: String, val numeros: List<MutableList<Casilla>> = List(5){ mutableListOf() })
 
 /*
 Cada cartón tendrá un identificador.
@@ -19,10 +39,13 @@ Cada cartón cuenta con cinco columnas y cinco filas, con números generados al 
     la tercera desde el 31 al 45
     el cuarto desde el 46 al 60 y la quinta desde el 61 al 75.
  */
-class Carton(val id: String, numeros: List<List<Int>>) {
+class Carton(private val idCarton: String, numeros: List<List<Int>>) {
     private lateinit var carton : List<MutableList<Casilla>>
     private lateinit var estadoBingo : MutableMap<Int, Casilla>
     private lateinit var estadoLineas : MutableList<Linea>
+    val cantaLinea = Signal<Linea>()
+    val cantaBingo = Signal<NumerosCarton>()
+
 
     init{
         montaCarton(numeros)
@@ -32,34 +55,9 @@ class Carton(val id: String, numeros: List<List<Int>>) {
         estadoLineas.forEach { println(it) }
     }
 
-    fun estaMarcado(numero: Int): Boolean {
-        var estaMarcado=false
-        estadoBingo[numero]?.let{
-            estaMarcado=(it.estado==EstadoCasilla.MARCADO)
-        }
-        return estaMarcado
-    }
-
-    fun marcar(numero: Int) {
-        estadoBingo[numero]?.estado = EstadoCasilla.MARCADO
-    }
-
-    fun compruebaSiLinea(): Boolean {
-        var indiceLinea = 0
-        var hayLinea = false
-        while (!hayLinea && indiceLinea < estadoLineas.size){
-            hayLinea = esUnaLineaSinCantar(estadoLineas[indiceLinea])
-            indiceLinea++
-        }
-        return hayLinea
-    }
-
-    fun compruebaSiBingo(): Boolean {
-        return (estadoBingo.values.none {
-            it.estado == EstadoCasilla.NOMARCADO
-        })
-    }
-
+    /**
+     * Monta el carton a partir de la lista de números.
+     */
     private fun montaCarton(numeros: List<List<Int>>) {
         val dimension = numeros.size
         carton = List(dimension){
@@ -86,10 +84,13 @@ class Carton(val id: String, numeros: List<List<Int>>) {
         }
     }
 
+    /**
+     * Monta la estructura de datos para saber si hay línea
+     */
     private fun montaEstadoLineas() {
         var indiceEstadoLinea = 0
-        estadoLineas = MutableList((carton.size*2)+2) {
-            Linea()
+        estadoLineas = MutableList(carton.size*3) {
+            Linea(idCarton)
         }
         //Lineas Horizontales
         carton.forEach { filaCasillas ->
@@ -107,14 +108,25 @@ class Carton(val id: String, numeros: List<List<Int>>) {
             indiceEstadoLinea++
         }
 
-        //Diagonales
-        for(indice in 0..dimension-2) {
+        //Diagonales I-D\
+        for(indice in 0 until dimension-1) {
             estadoLineas[indiceEstadoLinea].linea.add(carton[indice][indice+1])
             estadoLineas[indiceEstadoLinea+1].linea.add(carton[indice+1][indice])
         }
 
+        //TODO: Extraer las lineas diagonales que van de derecha a izquierda.
+        //Diagonales D-I/
+        /*
+        for(indice in 0 until dimension-1) {
+            estadoLineas[indiceEstadoLinea].linea.add(carton[indice][indice+1])
+            estadoLineas[indiceEstadoLinea+1].linea.add(carton[indice+1][indice])
+        }
+        */
     }
 
+    /**
+     * Monta la estructura de datos para saber si hay bingo.
+     */
     private fun montaEstadoBingo(){
         estadoBingo = mutableMapOf()
         carton.forEach { filaCasillas ->
@@ -125,8 +137,91 @@ class Carton(val id: String, numeros: List<List<Int>>) {
 
     }
 
+    /**
+     * Pregunta si un número está marcado en el cartón.
+     */
+    fun estaMarcado(numero: Int): Boolean {
+        var estaMarcado=false
+        estadoBingo[numero]?.let{
+            estaMarcado=(it.estado==EstadoCasilla.MARCADO)
+        }
+        return estaMarcado
+    }
+
+    /**
+     * Marcar un número.
+     */
+    fun marcar(numero: Int) {
+        estadoBingo[numero]?.estado = EstadoCasilla.MARCADO
+    }
+
+    /**
+     * Comprueba si hay línea sin cantar, y si es así la canta.
+     */
+    fun compruebaSiLinea(): Boolean {
+        var indiceLinea = 0
+        var hayLinea = false
+        while (indiceLinea < estadoLineas.size){
+            if (esUnaLineaSinCantar(estadoLineas[indiceLinea])){
+                hayLinea=true
+                cantaLinea(estadoLineas[indiceLinea])
+            }
+            indiceLinea++
+        }
+        return hayLinea
+    }
+
+    /**
+     * Canta la línea, emitiendo una señal con la línea y la marca como cantada
+     *
+     * ¿Tiene sentido que sea el carton quien canta la línea?
+     */
+    private fun cantaLinea(linea: Linea) {
+        linea.cantada = LineaCantada.SI
+        cantaLinea.emitir(linea)
+    }
+
+    /**
+     * Comprueba si hay bingo, y si es asi lo canta.
+     */
+    fun compruebaSiBingo(): Boolean {
+        val hayBingo= (estadoBingo.values.none {
+            it.estado == EstadoCasilla.NOMARCADO
+        })
+        if (hayBingo)
+            cantaBingo(numerosCarton())
+        return hayBingo
+    }
+
+    /**
+     * Canta el bingo, emitiendo una señal con la información del cartón
+     *
+     * ¿Tiene sentido que sea el carton quien canta el bingo?
+     */
+    private fun cantaBingo(numerosCarton: NumerosCarton) {
+        cantaBingo.emitir(numerosCarton)
+    }
+
+    /**
+     * Pregunta si es linea y sin cantar
+     */
     private fun esUnaLineaSinCantar(linea: Linea): Boolean {
         return ((linea.linea.none { it.estado == EstadoCasilla.NOMARCADO }) && (linea.cantada == LineaCantada.NO))
+    }
+
+    /**
+     * Convierte a formato data class los numeros del cartón para enviarlo por señal
+     */
+    private fun numerosCarton(): NumerosCarton{
+        val numerosCarton = NumerosCarton(idCarton)
+        var indiceFilas = 0
+        carton.forEach {
+            it.forEach{casilla ->
+                numerosCarton.numeros[indiceFilas].add(casilla.copy())
+            }
+            indiceFilas++
+        }
+        return numerosCarton
     }
 
 }

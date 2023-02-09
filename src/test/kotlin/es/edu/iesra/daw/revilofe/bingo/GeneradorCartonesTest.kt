@@ -17,6 +17,12 @@ Cada cartón cuenta con cinco columnas y cinco filas, con números generados al 
 
 Las columnas contienen cuatro números porque las posiciones (0,0) (1,1) (2,2) (3,3) (4,4) estarán vacías.
  */
-class GeneradorCartonesTest : DescribeSpec(){
+class GeneradorCartonesTest : DescribeSpec({
+        describe("Genera cartones") {
+            it("Debe generar cartones aleatorios"){
+                var cartones : List<Carton> = GeneradorCartones.genera(5)
+            }
+        }
 
-}
+        describe("...") { }
+})
