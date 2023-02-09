@@ -47,17 +47,20 @@ object Juego {
      */
     private fun montaJuego(){
 
-        //Me creo los cartones, y los añado como observadores del locutor.
-        cartones = generador.genera(numCartones).onEach { carton->
-            locutor.nuevoNumero.conectar {carton::marcar}
+        //Me creo los cartones,
+        cartones = generador.genera(numCartones)
+
+        //Añado como observadores del locutor.
+        cartones.forEach {carton ->
+            locutor.nuevoNumero.conectar (carton::marcar)
         }
-        locutor.nuevoNumero.conectar {registro::nuevoNumero}
+        locutor.nuevoNumero.conectar (registro::nuevoNumero)
 
         //Observadores de cartones
         cartones.forEach {carton ->
-            carton.cantaBingo.conectar { registro::bingoCantado }
-            carton.cantaLinea.conectar { registro::lineaCantada }
-            carton.cantaLinea.conectar { this::bingoCantado }
+            carton.cantaBingo.conectar ( registro::bingoCantado )
+            carton.cantaLinea.conectar ( registro::lineaCantada )
+            carton.cantaBingo.conectar ( this::bingoCantado )
 
         }
 
@@ -67,7 +70,7 @@ object Juego {
      * Pone en juego el bingo.
      */
     fun play() {
-        while (locutor.anunciaNuevaBola() && !hayBingo){
+        while (!hayBingo && locutor.anunciaNuevaBola()){
             cartones.forEach { carton ->
                 carton.compruebaSiLinea()
                 carton.compruebaSiBingo()
@@ -78,7 +81,7 @@ object Juego {
     /**
      * Callback que se llama cuando hay bingo
      */
-    private fun bingoCantado(){
+    private fun bingoCantado(carton: NumerosCarton) {
         hayBingo = true
     }
 

@@ -66,6 +66,7 @@ object Registro {
                         EstadoCasilla.VACIO -> print("X) ")
                     }
                 }
+                println()
             }
         }
     }
