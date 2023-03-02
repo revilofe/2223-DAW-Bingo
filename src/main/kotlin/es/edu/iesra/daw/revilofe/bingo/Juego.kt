@@ -76,6 +76,7 @@ object Juego {
                 carton.compruebaSiBingo()
             }
         }
+        registro.muestraResumen()
     }
 
     /**
