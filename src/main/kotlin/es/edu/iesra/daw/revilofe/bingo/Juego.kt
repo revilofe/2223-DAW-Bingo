@@ -19,7 +19,7 @@ los identificadores de los cartones y las líneas conseguidas, así como
 el bingo del cartón ganador.
  */
 
-data class ConfigJuego(val nunCartones: Int = 5, val bombo: Bombo = Bombo, val locutor: Locutor =Locutor, val generador: GeneradorCartones = GeneradorCartones, val registro: Registro = Registro)
+data class ConfigJuego(val nunCartones: Int = 5, val bombo: Bombo = Bombo, val locutor: Locutor = Locutor, val generador: GeneradorCartones = GeneradorCartones, val registro: Registro = Registro)
 
 object Juego {
 
@@ -31,7 +31,7 @@ object Juego {
     private lateinit var bombo: Bombo
     private lateinit var registro: Registro
 
-    fun configura(config : ConfigJuego= ConfigJuego()) {
+    fun configura(config: ConfigJuego = ConfigJuego()) {
         numCartones = config.nunCartones
         generador = config.generador
         locutor = config.locutor.apply {
@@ -39,41 +39,39 @@ object Juego {
         }
         registro = config.registro
         montaJuego()
-        
     }
 
     /**
      * Monta el bingo, creando los cartones y conecta los observers del locutor y de los cartones.
      */
-    private fun montaJuego(){
+    private fun montaJuego() {
 
-        //Me creo los cartones,
+        // Me creo los cartones,
         cartones = generador.genera(numCartones)
 
-        //Añado como observadores del locutor.
-        cartones.forEach {carton ->
-            locutor.nuevoNumero.conectar (carton::marcar)
+        // Añado como observadores del locutor.
+        cartones.forEach { carton ->
+            locutor.nuevoNumero.conectar(carton::marcar)
         }
-        locutor.nuevoNumero.conectar (registro::nuevoNumero)
+        locutor.nuevoNumero.conectar(registro::nuevoNumero)
 
-        //Observadores de cartones
-        cartones.forEach {carton ->
-            carton.cantaBingo.conectar ( registro::bingoCantado )
-            carton.cantaLinea.conectar ( registro::lineaCantada )
-            carton.cantaBingo.conectar ( this::bingoCantado )
-
+        // Observadores de cartones
+        cartones.forEach { carton ->
+            carton.cantaBingo.conectar(registro::bingoCantado)
+            carton.cantaLinea.conectar(registro::lineaCantada)
+            carton.cantaBingo.conectar(this::bingoCantado)
         }
-
     }
 
     /**
      * Pone en juego el bingo.
      */
     fun play() {
-        while (!hayBingo && locutor.anunciaNuevaBola()){
+        while (!hayBingo && locutor.anunciaNuevaBola()) {
             chequeaCartones()
         }
         registro.resumen()
+        // registro.muestraResumen()
     }
 
     /**
@@ -84,7 +82,6 @@ object Juego {
             carton.compruebaSiLinea()
             carton.compruebaSiBingo()
         }
-        registro.muestraResumen()
     }
 
     /**
@@ -93,5 +90,4 @@ object Juego {
     private fun bingoCantado(carton: NumerosCarton) {
         hayBingo = true
     }
-
 }

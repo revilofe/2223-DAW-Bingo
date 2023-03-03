@@ -8,12 +8,11 @@ object Bombo {
     init {
         configura()
     }
-    fun configura(servicioNumeros: ServicioDeNumeros = ServicioDeNumeros(1,76)) {
+    fun configura(servicioNumeros: ServicioDeNumeros = ServicioDeNumeros(1, 76)) {
         this.servicioNumeros = servicioNumeros
     }
 
     fun nuevaBola(): Int? {
         return servicioNumeros.unNumeroOrNull()
     }
-
 }

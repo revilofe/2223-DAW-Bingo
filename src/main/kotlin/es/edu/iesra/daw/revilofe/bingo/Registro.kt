@@ -2,14 +2,13 @@ package es.edu.iesra.daw.revilofe.bingo
 
 object Registro {
     private var carton: NumerosCarton? = null
-    private var registroLineas:  MutableList<Linea> =  mutableListOf()
-    private var registroNumeros:  MutableList<Int> =  mutableListOf()
+    private var registroLineas: MutableList<Linea> = mutableListOf()
+    private var registroNumeros: MutableList<Int> = mutableListOf()
 
     /**
      * Callback que se llama para informar de nuevo numero
      */
-    fun nuevoNumero(numero: Int)
-    {
+    fun nuevoNumero(numero: Int) {
         registroNumeros.add(numero)
         informaDelNumero(numero)
     }
@@ -17,8 +16,7 @@ object Registro {
     /**
      * Callback que se llama cuando para informar de nueva linea
      */
-    fun lineaCantada(linea: Linea)
-    {
+    fun lineaCantada(linea: Linea) {
         registroLineas.add(linea)
         informaDelLinea(linea)
     }
@@ -26,29 +24,12 @@ object Registro {
     /**
      * Callback que se llama cuando para informar de bingo
      */
-    fun bingoCantado(carton: NumerosCarton)
-    {
+    fun bingoCantado(carton: NumerosCarton) {
         this.carton = carton
         informaDelBingo(carton)
     }
-    public fun muestraResumen(){
-        println("Numeros que han salido...")
-        registroNumeros.forEachIndexed { index, i ->
-            println("Posición ${index}: $i")
-        }
 
-        println("\nCartones que han cantado línea...")
-        registroLineas.forEachIndexed { index, linea ->
-            println("\nPosición ${index}: Cartón ${linea.idCarton}")
-            linea.linea.forEach { print("${it.numero} ") }
-        }
-
-        println("\nCarton que han bingo: ${carton?.idCarton}")
-
-        }
-
-
-    //TODO: Valorar si a la hora de informar puede tener sentido crear una clase display.
+    // TODO: Valorar si a la hora de informar puede tener sentido crear una clase display.
     /**
      * Informa de un numero
      */
@@ -67,7 +48,6 @@ object Registro {
             }
             println()
         }
-
     }
 
     /**
@@ -76,9 +56,9 @@ object Registro {
     private fun informaDelBingo(carton: NumerosCarton) {
         println("Han cantado BINGO!!!!!!!!!! El cartón [${carton.idCarton}]: ").also {
             carton.numeros.forEach {
-                it.forEach {casilla->
+                it.forEach { casilla ->
                     print("(${casilla.f} ${casilla.c}: ${casilla.numero}")
-                    when(casilla.estado) {
+                    when (casilla.estado) {
                         EstadoCasilla.NOMARCADO -> print("O) ")
                         EstadoCasilla.MARCADO -> print("V) ")
                         EstadoCasilla.NULA -> print("X) ")
@@ -102,7 +82,20 @@ object Registro {
             println("El carton ${it[0].idCarton} ha cantado el total de líneas: ${it.size}")
         }
         println("\nEl carton ${carton?.idCarton} ha sido el GANADOR!!")
-
     }
 
+    public fun muestraResumen() {
+        println("Numeros que han salido...")
+        registroNumeros.forEachIndexed { index, i ->
+            println("Posición $index: $i")
+        }
+
+        println("\nCartones que han cantado línea...")
+        registroLineas.forEachIndexed { index, linea ->
+            println("\nPosición $index: Cartón ${linea.idCarton}")
+            linea.linea.forEach { print("${it.numero} ") }
+        }
+
+        println("\nCarton que han bingo: ${carton?.idCarton}")
+    }
 }

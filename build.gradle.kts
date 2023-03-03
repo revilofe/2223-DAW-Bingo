@@ -1,10 +1,29 @@
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+
 plugins {
     kotlin("jvm") version "1.8.0"
+    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
     application
 }
-//var moshiVersion = "1.11.0"
+
+// Configuración de klint
+ktlint {
+    verbose.set(true)
+    outputToConsole.set(true)
+    coloredOutput.set(true)
+    reporters {
+        reporter(ReporterType.CHECKSTYLE)
+        reporter(ReporterType.JSON)
+        reporter(ReporterType.HTML)
+    }
+    filter {
+        exclude("**/style-violations.kt")
+    }
+}
+
+// var moshiVersion = "1.11.0"
 var moshiVersion = "1.14.0"
-//var kotestVersion = "4.4.3"
+// var kotestVersion = "4.4.3"
 var kotestVersion = "5.5.4"
 var okHttpVersion = "4.10.0"
 var mockKVersion = "1.13.4"
