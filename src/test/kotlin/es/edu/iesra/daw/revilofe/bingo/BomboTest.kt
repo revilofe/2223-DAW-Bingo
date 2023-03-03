@@ -17,8 +17,8 @@ class BomboTest : DescribeSpec({
     // Aunque no sería necesario crear un mock, ya que para los test nos servirían
     // que los numeros puedieran ser aleatorios, se realiza a modo de ejemplo.
     describe("Un bombo de un bingo"){
-        var maximo = 5
         var minimo = 1
+        var maximo = 5
 
         // Creo una lista con los elementos ordenados de forma aleatoria
         var listaMock = List(maximo - minimo) {

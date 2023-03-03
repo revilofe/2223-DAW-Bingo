@@ -37,17 +37,19 @@ object Registro {
      * Informa de un numero
      */
     private fun informaDelNumero(numero: Int) {
-        println("numero ${registroNumeros.size}: $numero")
+        println("##################################### Numero ${registroNumeros.size}: El $numero")
     }
 
     /**
      * Informa de una linea
      */
     private fun informaDelLinea(linea: Linea) {
-        println("línea número ${registroLineas.size} del cartón:${linea.idCarton}: ").also {
+
+        println("LÍNEA número ${registroLineas.size} del cartón [${linea.idCarton}]: ").also {
             linea.linea.forEach {
-                println("- ${it.f} ${it.c}: ${it.numero}")
+                print("(${it.f} ${it.c}: ${it.numero}) ")
             }
+            println()
         }
 
     }
@@ -56,19 +58,35 @@ object Registro {
      * Informa de un bingo
      */
     private fun informaDelBingo(carton: NumerosCarton) {
-        println("Han cantado bingo, el cartón:${carton.idCarton}: ").also {
+        println("Han cantado BINGO!!!!!!!!!! El cartón [${carton.idCarton}]: ").also {
             carton.numeros.forEach {
                 it.forEach {casilla->
                     print("(${casilla.f} ${casilla.c}: ${casilla.numero}")
                     when(casilla.estado) {
                         EstadoCasilla.NOMARCADO -> print("O) ")
                         EstadoCasilla.MARCADO -> print("V) ")
-                        EstadoCasilla.VACIO -> print("X) ")
+                        EstadoCasilla.NULA -> print("X) ")
                     }
                 }
                 println()
             }
         }
+    }
+
+    fun resumen() {
+        println()
+        println("################## RESUMEN DE LA PARTIDA ##################")
+        println("El cantidad de números que han salido: ${registroNumeros.size}")
+        println("El número de líneas cantadas han sido: ${registroLineas.size}")
+        registroLineas.groupBy {
+            it.idCarton
+        }.values.sortedBy {
+            it.size
+        }.forEach {
+            println("El carton ${it[0].idCarton} ha cantado el total de líneas: ${it.size}")
+        }
+        println("\nEl carton ${carton?.idCarton} ha sido el GANADOR!!")
+
     }
 
 }

@@ -12,6 +12,7 @@ class Signal<T> {
             cb.value(nuevoValor)
     }
 
+
     fun conectar(callback: (nuevoValor: T) -> Unit) : Conexion {
         val conexion = Conexion()
         callbacks[conexion] = callback

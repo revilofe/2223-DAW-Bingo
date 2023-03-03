@@ -6,7 +6,7 @@ import es.edu.iesra.daw.revilofe.patrones.signalslot.Signal
  * Representa los posibles estados de las casillas.
  */
 enum class EstadoCasilla {
-    MARCADO, NOMARCADO, VACIO
+    MARCADO, NOMARCADO, NULA
 }
 
 /**
@@ -51,8 +51,8 @@ class Carton(private val idCarton: String, numeros: List<List<Int>>) {
         montaCarton(numeros)
         montaEstadoBingo()
         montaEstadoLineas()
-        println(carton)
-        estadoLineas.forEach { println(it) }
+        //println(carton)
+        //estadoLineas.forEach { println(it) }
     }
 
     /**
@@ -69,7 +69,7 @@ class Carton(private val idCarton: String, numeros: List<List<Int>>) {
         numeros.forEach {
             it.forEach{numero ->
                 if (filasCarton==columnasCarton) {
-                    carton[filasCarton].add(Casilla(filasCarton, columnasCarton, -1, EstadoCasilla.VACIO))
+                    carton[filasCarton].add(Casilla(filasCarton, columnasCarton, -1, EstadoCasilla.NULA))
                     filasCarton++
                 }
                 carton[filasCarton].add(Casilla(filasCarton, columnasCarton, numero, EstadoCasilla.NOMARCADO))
@@ -80,7 +80,7 @@ class Carton(private val idCarton: String, numeros: List<List<Int>>) {
             filasCarton=0
         }.also {
             //Rellena la ultima casilla
-            carton[dimension-1].add(Casilla(dimension-1, dimension-1, -1, EstadoCasilla.VACIO))
+            carton[dimension-1].add(Casilla(dimension-1, dimension-1, -1, EstadoCasilla.NULA))
         }
     }
 
@@ -94,16 +94,17 @@ class Carton(private val idCarton: String, numeros: List<List<Int>>) {
         }
         //Lineas Horizontales
         carton.forEach { filaCasillas ->
-            filaCasillas.filter { it.estado!= EstadoCasilla.VACIO}.forEach { casilla ->
+            filaCasillas.filter { it.estado!= EstadoCasilla.NULA}.forEach { casilla ->
                 estadoLineas[indiceEstadoLinea].linea.add(casilla)
             }
             indiceEstadoLinea++
         }
-        //Lineas Verticales
         val dimension = carton.size
+
+        //Lineas Verticales
         for(indiceCasilla in 0 until dimension) {
             for (indiceLista in 0 until dimension)
-                if (carton[indiceLista][indiceCasilla].estado!=EstadoCasilla.VACIO)
+                if (carton[indiceLista][indiceCasilla].estado!=EstadoCasilla.NULA)
                     estadoLineas[indiceEstadoLinea].linea.add(carton[indiceLista][indiceCasilla])
             indiceEstadoLinea++
         }
@@ -113,15 +114,23 @@ class Carton(private val idCarton: String, numeros: List<List<Int>>) {
             estadoLineas[indiceEstadoLinea].linea.add(carton[indice][indice+1])
             estadoLineas[indiceEstadoLinea+1].linea.add(carton[indice+1][indice])
         }
+        indiceEstadoLinea+=2
 
-        //TODO: Extraer las lineas diagonales que van de derecha a izquierda.
         //Diagonales D-I/
-        /*
-        for(indice in 0 until dimension-1) {
-            estadoLineas[indiceEstadoLinea].linea.add(carton[indice][indice+1])
-            estadoLineas[indiceEstadoLinea+1].linea.add(carton[indice+1][indice])
+        for(indiceFilas in dimension-2 downTo 0) {
+            estadoLineas[indiceEstadoLinea].linea.add(carton[indiceFilas][(dimension-2)-indiceFilas])
         }
-        */
+        indiceEstadoLinea++
+
+        for(indiceFilas in dimension-1 downTo 0) {
+            if (indiceFilas != ((dimension-1)-indiceFilas))
+                estadoLineas[indiceEstadoLinea].linea.add(carton[indiceFilas][(dimension-1)-indiceFilas])
+        }
+        indiceEstadoLinea++
+
+        for(indiceFilas in dimension-1 downTo 1) {
+            estadoLineas[indiceEstadoLinea].linea.add(carton[indiceFilas][dimension-indiceFilas])
+        }
     }
 
     /**
@@ -130,7 +139,7 @@ class Carton(private val idCarton: String, numeros: List<List<Int>>) {
     private fun montaEstadoBingo(){
         estadoBingo = mutableMapOf()
         carton.forEach { filaCasillas ->
-            filaCasillas.filter { it.estado!= EstadoCasilla.VACIO}.forEach { casilla ->
+            filaCasillas.filter { it.estado!= EstadoCasilla.NULA}.forEach { casilla ->
                 estadoBingo[casilla.numero] = casilla
             }
         }
@@ -174,7 +183,7 @@ class Carton(private val idCarton: String, numeros: List<List<Int>>) {
     /**
      * Canta la línea, emitiendo una señal con la línea y la marca como cantada
      *
-     * ¿Tiene sentido que sea el carton quien canta la línea?
+     * TODO: ¿Tiene sentido que sea el carton quien canta la línea?
      */
     private fun cantaLinea(linea: Linea) {
         linea.cantada = LineaCantada.SI
@@ -196,7 +205,7 @@ class Carton(private val idCarton: String, numeros: List<List<Int>>) {
     /**
      * Canta el bingo, emitiendo una señal con la información del cartón
      *
-     * ¿Tiene sentido que sea el carton quien canta el bingo?
+     * TODO: ¿Tiene sentido que sea el carton quien canta el bingo?
      */
     private fun cantaBingo(numerosCarton: NumerosCarton) {
         cantaBingo.emitir(numerosCarton)

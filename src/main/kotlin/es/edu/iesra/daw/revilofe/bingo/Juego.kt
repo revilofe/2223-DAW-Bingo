@@ -71,10 +71,18 @@ object Juego {
      */
     fun play() {
         while (!hayBingo && locutor.anunciaNuevaBola()){
-            cartones.forEach { carton ->
-                carton.compruebaSiLinea()
-                carton.compruebaSiBingo()
-            }
+            chequeaCartones()
+        }
+        registro.resumen()
+    }
+
+    /**
+     * Comprueba si hay linea o bingo en los cartones
+     */
+    private fun chequeaCartones() {
+        cartones.forEach { carton ->
+            carton.compruebaSiLinea()
+            carton.compruebaSiBingo()
         }
     }
 
