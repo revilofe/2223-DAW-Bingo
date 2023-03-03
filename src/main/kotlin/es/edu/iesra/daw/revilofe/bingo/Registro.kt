@@ -31,6 +31,22 @@ object Registro {
         this.carton = carton
         informaDelBingo(carton)
     }
+    public fun muestraResumen(){
+        println("Numeros que han salido...")
+        registroNumeros.forEachIndexed { index, i ->
+            println("Posición ${index}: $i")
+        }
+
+        println("\nCartones que han cantado línea...")
+        registroLineas.forEachIndexed { index, linea ->
+            println("\nPosición ${index}: Cartón ${linea.idCarton}")
+            linea.linea.forEach { print("${it.numero} ") }
+        }
+
+        println("\nCarton que han bingo: ${carton?.idCarton}")
+
+        }
+
 
     //TODO: Valorar si a la hora de informar puede tener sentido crear una clase display.
     /**

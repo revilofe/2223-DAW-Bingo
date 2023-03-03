@@ -84,6 +84,7 @@ object Juego {
             carton.compruebaSiLinea()
             carton.compruebaSiBingo()
         }
+        registro.muestraResumen()
     }
 
     /**
